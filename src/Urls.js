@@ -1,0 +1,1 @@
+export const baseUrl = `https://horrorhub-backend-3.onrender.com`    
