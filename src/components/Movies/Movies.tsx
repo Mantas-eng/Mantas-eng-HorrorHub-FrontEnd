@@ -19,7 +19,7 @@ const Movies: React.FC = () => {
   const [clickedCardIndex, setClickedCardIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    axios.get<{ movies: Movie[] }>(`${baseUrl}/movies`) // Pridedame /movies prie baseUrl
+    axios.get<{ movies: Movie[] }>(`${baseUrl}/movies`) 
       .then(response => {
         setMovies(response.data.movies);
         setDefaultMovies(response.data.movies);
