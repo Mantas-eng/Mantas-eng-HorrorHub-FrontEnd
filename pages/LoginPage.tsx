@@ -5,7 +5,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import LogoIMG from "../src/components/Navbar/logo/logo.png"; 
 import { useRouter } from 'next/router';
-import { baseUrl } from '../src/Urls'; 
+import { baseUrl } from '../src/components/Urls'; 
 
 const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState({

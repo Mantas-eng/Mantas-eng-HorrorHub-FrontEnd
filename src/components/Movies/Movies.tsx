@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Container, Row, Col } from 'react-bootstrap';
 import SearchBar from '../SearchBar/SearchBar';
 import styles from '../styles/styles.module.scss';
-import { baseUrl } from '/Users/MANTAS/Desktop/HorrorHub-Website/FrontEnd/src/Urls'; 
+import { baseUrl } from '../Urls'; 
 
 interface Movie {
   _id: string;
