@@ -6,7 +6,7 @@ import Cookies from 'js-cookie';
 import { useRouter } from 'next/router';
 import LogoIMG from "../src/components/Navbar/logo/logo.png";
 import { baseUrl } from '../src/components/Urls'; 
-
+import Footer from '../src/components/Footer/Footer';
 const RegisterPage: React.FC = () => {
   const [formData, setFormData] = useState({
     username: '',
@@ -48,17 +48,17 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <Container className="bg-dark text-white py-4">
+    <Container className="custom-container">
       <div className='row justify-content-between'>
         <div className='col-12 text-center'>
-          <Navbar.Brand>
+        <Link href="/" passHref>
             <img
               src={LogoIMG.src}
               width="120"
               height="120"
               alt="React Bootstrap logo"
             />
-          </Navbar.Brand>
+          </Link>
         </div>
       </div>
       <div className='row justify-content-center mt-3'>
@@ -126,6 +126,9 @@ const RegisterPage: React.FC = () => {
               </div>
             </div>
           </Form>
+        </div>
+        <div className='Footer'>
+          <Footer/>
         </div>
       </div>
     </Container>

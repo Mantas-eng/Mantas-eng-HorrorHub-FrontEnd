@@ -9,6 +9,8 @@ import { useRouter } from 'next/router';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import UserModal from '../UserModal/UserModal';
+import { baseUrl } from '../Urls'; 
+import axios from 'axios';
 
 const App: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
@@ -54,18 +56,12 @@ const App: React.FC = () => {
 
   const fetchUserData = async () => {
     try {
-      const response = await fetch('http://localhost:3000/userData', {
-        method: 'GET',
+      const response = await axios.get(`${baseUrl}/userData`, {
         headers: {
           Authorization: `Bearer ${Cookies.get('token')}`,
         },
       });
-      if (response.ok) {
-        const userData = await response.json();
-        setUserData(userData);
-      } else {
-        console.error('Failed to fetch user data');
-      }
+      setUserData(response.data);
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
@@ -78,15 +74,15 @@ const App: React.FC = () => {
         className={`${styles.navbar} navbar navbar-expand-lg fixed-top navbar-dark bg-dark navbar-sticky`}
       >
         <Container>
-          <Navbar.Brand href="index.html">
-            <img
-              src={LogoIMG.src}
-              width="150"
-              height="120"
-              className={`d-inline-block align-top`}
-              alt="React Bootstrap logo"
-            />
-          </Navbar.Brand>
+        <Link href="/" passHref>
+              <img
+                src={LogoIMG.src}
+                width="150"
+                height="120"
+                className={`d-inline-block align-top`}
+                alt="React Bootstrap logo"
+              />
+          </Link>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mr-auto">
