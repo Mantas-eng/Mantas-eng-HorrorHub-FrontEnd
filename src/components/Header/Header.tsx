@@ -4,7 +4,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import styles from '../styles/styles.module.scss';
 import Movies from '../Movies/Movies';
 
-
 const Header: React.FC = () => {
   return (
     <header className={`${styles.header} py-7`}>

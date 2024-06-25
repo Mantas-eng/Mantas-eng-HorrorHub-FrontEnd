@@ -9,7 +9,7 @@ import { useRouter } from 'next/router';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import UserModal from '../UserModal/UserModal';
-import { baseUrl } from '../Urls'; 
+import { baseUrl } from '../utils/Urls'; 
 import axios from 'axios';
 
 const App: React.FC = () => {

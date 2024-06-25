@@ -3,6 +3,6 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/": "pages/index.js",
-  "/LoginPage": "pages/LoginPage.js",
-  "/RegisterPage": "pages/RegisterPage.js"
+  "/favoriteMovies/[favoriteMovieId]": "pages/favoriteMovies/[favoriteMovieId].js",
+  "/i/[movieId]": "pages/i/[movieId].js"
 }
