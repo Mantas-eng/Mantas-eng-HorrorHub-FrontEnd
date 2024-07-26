@@ -8,27 +8,17 @@ import SearchBar from '@/components/SearchBar/SearchBar';
 import styles from '@/components/styles/cover.module.scss';
 import Link from 'next/link';
 
-interface Movie {
-  _id: string;
-  film_name: string;
-  film_image: string;
-  release_date: string;
-  film_trailer: string;
-  description: string;
-  film_cover: string;
-}
-
 const MovieDetail: React.FC = () => {
   const router = useRouter();
   const { movieId } = router.query;
-  const [movie, setMovie] = useState<Movie | null>(null);
-  const [defaultMovies, setDefaultMovies] = useState<Movie[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [movie, setMovie] = useState(null);
+  const [defaultMovies, setDefaultMovies] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
     if (movieId) {
-      axios.get<{ movie: Movie }>(`${baseUrl}/movies/${movieId}`)
+      setLoading(true);
+      axios.get(`${baseUrl}/movies/${movieId}`)
         .then(response => {
           setMovie(response.data.movie);
         })
@@ -39,10 +29,9 @@ const MovieDetail: React.FC = () => {
           setLoading(false);
         });
     }
-    
   }, [movieId]);
 
-  const handleSearch = (searchTerm: string) => {
+  const handleSearch = (searchTerm) => {
     const filteredMovies = defaultMovies.filter(movie =>
       movie.film_name.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -85,16 +74,31 @@ const MovieDetail: React.FC = () => {
           {loading && <p>Loading...</p>}
           {movie && (
             <Col className={`${styles.image} col-6 col-sm-4 col-lg-2 mb-4 backdrop-shortnews-item`}>
-              <img src={movie.film_cover} className={`${styles.image}card-img-top img-fluid`} alt={movie.film_name} />
+              <img src={movie.film_cover} className={`${styles.image} card-img-top img-fluid`} alt={movie.film_name} />
               <div className="row align-items-start d-flex">
-                <div className={`${styles.films}`}>
-                  <img src={movie.film_image} className="" alt={movie.film_name} />
-                  <button type="button" className="align-top m-4 btn btn-success">IMDB</button>
-                  <button className="btn btn-dark  border-0 bgc-dark-2 px-3  btn-sm text-white-50 mt-1 mr-1 text-nowrap py-2 py-sm-1" type="button" data-toggle="collapse" data-target="#collapseAbout" data-parent="#coll-group-fs-01" aria-expanded="true" aria-controls="collapseAbout">Aprašymas <i className="fa fa-check text-green ml-1"></i></button>
-                  <button className="btn btn-dark  border-0 bgc-dark-2 px-3  btn-sm text-white-50 collapsed mt-1 mr-1 text-nowrap py-2 py-sm-1" type="button" data-toggle="collapse" data-target="#collapseCom" data-parent="#coll-group-fs-01" aria-expanded="false" aria-controls="collapseCom">Komentarai</button>
-                  <Link className="btn btn-dark  border-0 bgc-dark-2 px-3  btn-sm text-white-50 collapsed mt-1 mr-1 text-nowrap py-2 py-sm-1" href="https://www.youtube.com/watch?v=N57xF8X2iCM" data-lity="">Anonsas <i className="fa fa-check text-green ml-1"></i></Link>
-                  <button className="btn btn-dark  border-0 bgc-dark-2 px-3  btn-sm text-white-50 collapsed mt-1 mr-1 text-nowrap py-2 py-sm-1" type="button" data-toggle="collapse" data-target="#collapseRelated" data-parent="#coll-group-fs-01" aria-expanded="false" aria-controls="collapseRelated">Panašūs <i className="fa fa-check text-green ml-1"></i></button>
-                  <button className="btn btn-dark  border-0 bgc-dark-2 px-3  btn-sm text-white-50 collapsed mt-1 mr-1 text-nowrap py-2 py-sm-1" type="button" data-toggle="collapse" data-target="#collapseCast" data-parent="#coll-group-fs-01" aria-expanded="false" aria-controls="collapseCast">Aktoriai <i className="fa fa-check text-green ml-1"></i></button>
+                <div className={styles.films}>
+                  <img src={movie.film_image} alt={movie.film_name} />
+                  <button type="button" className="btn btn-success m-5 ">IMDB</button>
+                  <div>
+                    <span className='small mb-1 mb-xl-0 mr-2'>
+                    <Link href={'/movie/biography"'} className="text-white-50">Biografiniai</Link>
+                    <Link href={'/movie/biography"'} className="text-white-50">drama</Link>
+                    <Link href={'/movie/biography"'} className="text-white-50">sport</Link>
+                    </span>
+                  </div>
+                  <div className={`${styles.container} button-container justify-content-center mx-auto gap-2 align-items-center`}>
+                    <div className={`${styles.red} p-2 d-flex gap-2 col-lg-4`}>
+                    <button className="btn btn-dark border-0 bgc-dark-2 px-3 btn-sm text-white-50" type="button" data-toggle="collapse" data-target="#collapseAbout" data-parent="#coll-group-fs-01" aria-expanded="true" aria-controls="collapseAbout">Aprašymas <i className="fa fa-check text-green ml-1">
+                      </i></button>
+                    <button className="btn btn-dark border-0 bgc-dark-2 px-3 btn-sm text-white-50 collapsed" type="button" data-toggle="collapse" data-target="#collapseCom" data-parent="#coll-group-fs-01" aria-expanded="false" aria-controls="collapseCom">Komentarai</button>
+                    <Link className="btn btn-dark border-0 bgc-dark-2 px-3 btn-sm text-white-50 collapsed" href="https://www.youtube.com/watch?v=N57xF8X2iCM" data-lity="">Anonsas <i className="fa fa-check text-green ml-1"></i></Link>
+                    <button className="btn btn-dark border-0 bgc-dark-2 px-3 btn-sm text-white-50 collapsed" type="button" data-toggle="collapse" data-target="#collapseRelated" data-parent="#coll-group-fs-01" aria-expanded="false" aria-controls="collapseRelated">Panašūs <i className="fa fa-check text-green ml-1"></i></button>
+                    <button className="btn btn-dark border-0 bgc-dark-2 px-3 btn-sm text-white-50 collapsed" type="button" data-toggle="collapse" data-target="#collapseCast" data-parent="#coll-group-fs-01" aria-expanded="false" aria-controls="collapseCast">Aktoriai <i className="fa fa-check text-green ml-1"></i></button>
+                  </div>
+                  
+                </div>
+                <p className="news-id-28077 m-0 py-2 text-justify text-white-50">Šiame pasaulyje beveik visi turi kažkokias galias - skraidyti, pasiversti nematomu, naudoti ugnį ir t.t. Taip pat yra ir Juei akademija, kur priimami moksleiviai mokomi tapti herojais. Pagrindinis veikėjas Izuku nuo pat mažumės stebėjo savo mėgstamiausią herojų ir norėjo tapti vienu iš jų, tačiau jo vaikystė gana niūri - jis tapdavo pajuokų objektu, o ir dažnai buvo mušamas, negana to berniukas sužino, kad neturi jokių galių. Tačiau kaip pasikeis jo gyvenimas susitikus su pačiu geriausiu herojumi?</p>
+
                 </div>
               </div>
             </Col>

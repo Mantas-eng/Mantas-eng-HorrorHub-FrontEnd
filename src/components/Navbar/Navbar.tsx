@@ -9,7 +9,7 @@ import { useRouter } from 'next/router';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import UserModal from '../UserModal/UserModal';
-import { baseUrl } from '../utils/Urls'; 
+import { baseUrl } from '../utils/Urls';
 import axios from 'axios';
 
 const App: React.FC = () => {
@@ -17,8 +17,7 @@ const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [userData, setUserData] = useState<any>({
     username: '',
-    password: '',
-    email: ''
+    email: '' 
   });
   const router = useRouter();
 
@@ -74,14 +73,14 @@ const App: React.FC = () => {
         className={`${styles.navbar} navbar navbar-expand-lg fixed-top navbar-dark bg-dark navbar-sticky`}
       >
         <Container>
-        <Link href="/" passHref>
-              <img
-                src={LogoIMG.src}
-                width="150"
-                height="120"
-                className={`d-inline-block align-top`}
-                alt="React Bootstrap logo"
-              />
+          <Link href="/" passHref>
+            <img
+              src={LogoIMG.src}
+              width="150"
+              height="120"
+              className={`d-inline-block align-top`}
+              alt="React Bootstrap logo"
+            />
           </Link>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
@@ -113,7 +112,7 @@ const App: React.FC = () => {
       <UserModal
         show={showModal}
         handleClose={handleCloseModal}
-        user={userData}
+        user={userData} 
         handleLogout={handleLogout}
       />
     </>

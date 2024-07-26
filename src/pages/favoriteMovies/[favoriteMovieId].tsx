@@ -88,7 +88,7 @@ const FavoriteMovieDetail: React.FC = () => {
           {loading && <p>Loading...</p>}
           {favoriteMovie && (
             <Col className={`${styles.image} col-6 col-sm-4 col-lg-2 mb-4 backdrop-shortnews-item`}>
-            <img src={favoriteMovie.film_cover} className={`${styles.image}card-img-top img-fluid`} alt={favoriteMovie.film_name} />
+            <img src={favoriteMovie.film_cover} className={`${styles.image} card-img-top img-fluid`} alt={favoriteMovie.film_name} />
             <div className="row align-items-start d-flex">
               <div className={`${styles.films}`}>
                 <img src={favoriteMovie.film_favorite_image} className="" alt={favoriteMovie.film_name} />

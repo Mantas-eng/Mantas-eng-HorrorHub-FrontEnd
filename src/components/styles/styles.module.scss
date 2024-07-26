@@ -20,6 +20,10 @@ $navbar-sticky-opacity: 0.9;
     opacity: $navbar-sticky-opacity;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
+
+.loaded-background {
+    background-color: #ACE1AF; 
+  }
 @media(max-width:1000px){
     .header  {
         display: flex;
@@ -27,3 +31,4 @@ $navbar-sticky-opacity: 0.9;
         text-align:center;
     }
 }
+

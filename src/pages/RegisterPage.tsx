@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Navbar, Form, Button } from 'react-bootstrap';
+import { Container, Form, Button } from 'react-bootstrap';
 import Link from 'next/link';
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -7,13 +7,13 @@ import { useRouter } from 'next/router';
 import LogoIMG from "../components/Navbar/logo/logo.png";
 import { baseUrl } from '../components/utils/Urls'; 
 import Footer from '../components/Footer/Footer';
+
 const RegisterPage: React.FC = () => {
   const [formData, setFormData] = useState({
     username: '',
     password: '',
     email: ''
   });
-
   const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,15 +35,13 @@ const RegisterPage: React.FC = () => {
 
     try {
       const response = await axios.post(`${baseUrl}/register`, formData);
-      console.log('Registration response:', response.data); 
+      console.log('Registration response:', response.data);
 
-      const { token } = response.data;
-      Cookies.set('token', token, { expires: 1 }); 
-
-      router.push('/LoginPage');
+      // Redirect to VerifyEmailPage after successful registration
+      router.push('/VerifyEmailPage');
 
     } catch (error) {
-      console.error('Registration error:', error); 
+      console.error('Registration error:', error);
     }
   };
 
@@ -51,7 +49,7 @@ const RegisterPage: React.FC = () => {
     <Container className="custom-container">
       <div className='row justify-content-between'>
         <div className='col-12 text-center'>
-        <Link href="/" passHref>
+          <Link href="/" passHref>
             <img
               src={LogoIMG.src}
               width="120"
@@ -110,13 +108,12 @@ const RegisterPage: React.FC = () => {
                 <div className="col-12 px-0">
                   <input name="recaptcha" className="recaptcha" type="hidden" value="unset" />
                   <Button type="submit" className="btn btn-dark py-3 w-100 text-uppercase" tabIndex={2} id="submit_button">
-                    <span className="submit-button-text">Registruotis</span>
-                    <span className="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    Registruotis
                   </Button>
                   <div className="text-center mt-3">
-                    <Link href="/" passHref>
+                    <Link href="/LoginPage" passHref>
                       <span className="text-white small text-decoration-none">Prisijungti</span>
-                    </Link> 
+                    </Link>
                     <span className="text-white mx-2">|</span>
                     <Link href="/?narsyti" passHref>
                       <span className="text-white small text-decoration-none">Naršyti</span>
@@ -127,12 +124,12 @@ const RegisterPage: React.FC = () => {
             </div>
           </Form>
         </div>
-        <div className='Footer'>
-          <Footer/>
-        </div>
+      </div>
+      <div className='Footer'>
+        <Footer/>
       </div>
     </Container>
-  )
+  );
 }
 
 export default RegisterPage;

@@ -1,9 +1,25 @@
-.image{
+.image {
     width: 80%;
     background-repeat: no-repeat;
-    background-size: cover;   
-}
-.films{
+    background-size: cover;
+  }
+  
+  .films {
     background-color: rgb(15, 14, 14);
-}
+  }
+  
+  .container {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    flex-direction: row;
+  }
 
+  
+  .button-container .btn {
+    margin-right: 5px; // Adjust the margin as needed
+  }
+  
+  .button-container .btn:last-child {
+    margin-right: 0; // Remove the margin from the last child
+  }

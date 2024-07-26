@@ -1,8 +1,15 @@
 import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
 
+interface User {
+  username: string;
+  email: string;
+  role: string;
+  _id: string;
+}
+
 interface UserModalProps {
-  user: any;
+  user: User | null;
   show: boolean;
   handleClose: () => void;
   handleLogout: () => void;
@@ -15,10 +22,11 @@ const UserModal: React.FC<UserModalProps> = ({ user, show, handleClose, handleLo
         <Modal.Title>User Data</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {user && user.username && user.email && (
+        {user && (
           <>
             <p>Username: {user.username}</p>
             <p>Email: {user.email}</p>
+            <p>Role: {user.role}</p>
           </>
         )}
       </Modal.Body>
