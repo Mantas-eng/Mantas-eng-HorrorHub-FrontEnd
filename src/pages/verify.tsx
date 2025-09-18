@@ -16,7 +16,7 @@ export default function VerifyPage() {
         )
         .then(() => {
           setStatus("✅ Email verified successfully! Redirecting...");
-          setTimeout(() => router.push("/login"), 3000);
+          setTimeout(() => router.push("/LoginPage"), 3000);
         })
         .catch(() => {
           setStatus("❌ Verification link is invalid or expired.");
