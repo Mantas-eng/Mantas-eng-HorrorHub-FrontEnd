@@ -13,7 +13,6 @@ const VerifyPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
 
-  // Naudojame environment variable (Vercel / localhost)
   const baseUrl =
     process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8080/api";
 
@@ -26,7 +25,6 @@ const VerifyPage: React.FC = () => {
           `${baseUrl}/verify/${userId}/${uniqueString}`
         );
 
-        // Jei backend siunčia token ir user JSON
         if (response.data.token && response.data.user) {
           const { token, user } = response.data;
           Cookies.set("token", token, { expires: 1 });
