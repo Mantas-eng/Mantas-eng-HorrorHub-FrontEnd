@@ -1,71 +1,67 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, FormEvent, ChangeEvent } from 'react';
 
 interface Props {
-  handleSearch: (term: string) => void;
-  handleSort: () => void;
-  handleClearSearch: () => void;
+  handleSearch: (term: string, category: string, language: string) => void;
 }
 
-const SearchBar: React.FC<Props> = ({ handleSearch, handleSort, handleClearSearch }) => {
-  const [searchTerm, setSearchTerm] = useState<string>('');
+const SearchBar: React.FC<Props> = ({ handleSearch }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [category, setCategory] = useState('movie');
+  const [language, setLanguage] = useState('lt');
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    handleSearch(searchTerm);
-  };
-
-  const handleSortClick = () => {
-    handleSort();
-  };
-
-  const handleClearClick = () => {
-    setSearchTerm('');
-    handleClearSearch();
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleSearch(searchTerm, category, language);
   };
 
   return (
-    <nav className="container-fluid position-relative d-none d-lg-block bgc-505 rounded-top">
-      <div className="row">
-        <div className="col p-4">
-          <div className="container-fluid">
-            <div className="row p-row-sm">
-              <div className="col">
-                <form onSubmit={handleSubmit} className="d-flex align-items-center">
-                  <input
-                    type="text"
-                    className="bg-transparent border-0 w-100 text-light pl-2 searchFormInput form-control-lg"
-                    style={{ height: '59px' }}
-                    name="text"
-                    placeholder="Paieška..."
-                    value={searchTerm}
-                    onChange={handleChange}
-                    onFocus={(e) => e.target.select()}
-                  />
-                  <button type="submit" className="btn btn-outline-dark border-0 bg-transparent searchFormSubmitBtn">
-                    <i className="fa fa-search" aria-hidden="true"></i>
-                  </button>
-                </form>
-              </div>
-              <div className="col-12 col-sm-auto d-flex align-items-center mt-1 mt-sm-0">
-                <button type="button" className="btn btn-dark btn-sm w-100 border-0 text-white-50" onClick={handleSortClick}>
-                  Rūšiuoti pagal pavadinimą <i className="fa fa-sort-alpha-down text-muted" aria-hidden="true"></i>
-                </button>
-              </div>
-              <div className="col-12 col-sm-auto d-flex align-items-center mt-1 mt-sm-0">
-                <button type="button" className="btn btn-dark btn-sm w-100 border-0 text-white-50" onClick={handleClearClick}>
-                  Išvalyti paiešką <i className="fa fa-times text-muted" aria-hidden="true"></i>
-                </button>
-              </div>
-            </div>
-          </div>
+    <div className="bg-black w-full py-6 px-4">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-wrap md:flex-nowrap items-center gap-4 bg-neutral-900 px-6 py-4 rounded-md border-b border-lime-500"
+      >
+        {/* Search Input */}
+        <div className="flex flex-grow items-center bg-neutral-800 px-4 py-2 rounded-md border border-neutral-700 w-full">
+          <i className="fa fa-search text-neutral-400 mr-3" />
+          <input
+            type="text"
+            placeholder="paieška..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="bg-transparent text-white placeholder-neutral-500 focus:outline-none w-full"
+          />
         </div>
+
+        {/* Žanrai ir Išplėstinė paieška */}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className="bg-neutral-800 text-neutral-300 text-sm px-3 py-2 rounded-md hover:bg-neutral-700"
+          >
+            Žanrai <i className="fa fa-cog ml-1" />
+          </button>
+          <button
+            type="button"
+            className="bg-neutral-800 text-neutral-300 text-sm px-3 py-2 rounded-md hover:bg-neutral-700"
+          >
+            Išplėstinė paieška <i className="fa fa-cog ml-1" />
+          </button>
+        </div>
+
+        {/* Submit */}
+        <button
+          type="submit"
+          className="bg-neutral-800 text-white text-sm px-4 py-2 rounded-md hover:bg-neutral-700"
+        >
+          naujausiai įkelti
+        </button>
+      </form>
+
+      {/* Rezultatų info */}
+      <div className="text-sm text-neutral-400 mt-4 px-2">
+        <span className="font-semibold text-white">PAIEŠKA</span> iš viso <span className="bg-neutral-800 px-2 py-1 rounded text-white">15,059</span>
       </div>
-      <div className="searchSuggestMainDiv position-absolute bgc-row shadow d-none" style={{ left: '0', right: '0', zIndex: '1031', maxHeight: '396px', overflowY: 'auto' }}></div>
-    </nav>
+    </div>
   );
 };
 

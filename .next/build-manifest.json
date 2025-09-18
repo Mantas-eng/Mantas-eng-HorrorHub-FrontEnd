@@ -22,6 +22,11 @@
       "static/chunks/main.js",
       "static/chunks/pages/LoginPage.js"
     ],
+    "/RegisterPage": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/RegisterPage.js"
+    ],
     "/_app": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
@@ -31,6 +36,11 @@
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
+    ],
+    "/i/[movieId]": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/i/[movieId].js"
     ]
   },
   "ampFirstPages": []

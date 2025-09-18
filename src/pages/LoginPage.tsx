@@ -1,18 +1,18 @@
 // src/pages/LoginPage.tsx
-import React, { useState, useEffect } from 'react';
-import { Container, Form, Alert } from 'react-bootstrap';
-import Link from 'next/link';
-import axios from 'axios';
-import Cookies from 'js-cookie';
-import LogoIMG from "../components/Navbar/logo/logo.png";
-import { useRouter } from 'next/router';
-import { baseUrl } from '../components/utils/Urls';
+import React, { useState, useEffect } from "react";
+import { Container, Form, Alert } from "react-bootstrap";
+import Link from "next/link";
+import axios from "axios";
+import Cookies from "js-cookie";
+import LogoIMG from "../components/Navbar/logo/HorrorHubORiginal.png";
+import { useRouter } from "next/router";
+import { baseUrl } from "../components/utils/Urls";
 import Footer from "../components/Footer/Footer";
 
 const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,17 +20,17 @@ const LoginPage: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const isRegistered = localStorage.getItem('registered');
-    if (isRegistered === 'success') {
+    const isRegistered = localStorage.getItem("registered");
+    if (isRegistered === "success") {
       setRegistered(true);
-      localStorage.removeItem('registered');
-      Cookies.remove('token');
+      localStorage.removeItem("registered");
+      Cookies.remove("token");
     }
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prevState => ({ ...prevState, [name]: value }));
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -38,7 +38,7 @@ const LoginPage: React.FC = () => {
     const { email, password } = formData;
 
     if (!email || !password) {
-      setError('All fields are required');
+      setError("All fields are required");
       return;
     }
 
@@ -47,21 +47,20 @@ const LoginPage: React.FC = () => {
 
     try {
       const response = await axios.post(`${baseUrl}/login`, formData);
-      console.log('Login response:', response.data);
+      console.log("Login response:", response.data);
 
       const { token, user } = response.data;
-      Cookies.set('token', token, { expires: 1 });
-      localStorage.setItem('user', JSON.stringify(user));
+      Cookies.set("token", token, { expires: 1 });
+      localStorage.setItem("user", JSON.stringify(user));
 
-      router.push('/');
-
+      router.push("/");
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
 
       if (error.response && error.response.status === 401) {
-        setError('You need to verify your email first.');
+        setError("You need to verify your email first.");
       } else {
-        setError('Login error. Please check your credentials and try again.');
+        setError("Login error. Please check your credentials and try again.");
       }
     } finally {
       setLoading(false);
@@ -69,9 +68,9 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <Container className="custom-container">      
-      <div className='row justify-content-center'>
-        <div className='col-12 text-center mt-4'>
+    <Container className="custom-container">
+      <div className="row justify-content-center">
+        <div className="col-12 text-center mt-4">
           <Link href="/" passHref>
             <img
               src={LogoIMG.src}
@@ -123,19 +122,35 @@ const LoginPage: React.FC = () => {
                       name="remember_this"
                       defaultChecked
                     />
-                    <label className="form-check-label" htmlFor="rememberThis">Prisiminti mane</label>
+                    <label className="form-check-label" htmlFor="rememberThis">
+                      Prisiminti mane
+                    </label>
                   </div>
                 </div>
                 <div className="col-12 py-2 px-0">
-                  <button type="submit" className="btn btn-dark py-3 w-100 text-uppercase" disabled={loading}>
-                    {loading ? 'Vyksta prisijungimas...' : 'Prisijungti'}
+                  <button
+                    type="submit"
+                    className="btn btn-dark py-3 w-100 text-uppercase"
+                    disabled={loading}
+                  >
+                    {loading ? "Vyksta prisijungimas..." : "Prisijungti"}
                   </button>
 
-                  {error && <Alert variant="danger" className="mt-2">{error}</Alert>}
-                  {registered && <Alert variant="success" className="mt-2">Jūs sėkmingai užsiregistravote!</Alert>}
+                  {error && (
+                    <Alert variant="danger" className="mt-2">
+                      {error}
+                    </Alert>
+                  )}
+                  {registered && (
+                    <Alert variant="success" className="mt-2">
+                      Jūs sėkmingai užsiregistravote!
+                    </Alert>
+                  )}
 
                   <Link href="/RegisterPage" passHref>
-                    <button className="btn btn-success btn-sm py-2 w-100 text-uppercase mt-2">Registracija</button>
+                    <button className="btn btn-success btn-sm py-2 w-100 text-uppercase mt-2">
+                      Registracija
+                    </button>
                   </Link>
                 </div>
               </div>
@@ -144,8 +159,8 @@ const LoginPage: React.FC = () => {
         </div>
       </div>
 
-      <div className='Footer'>
-        <Footer/>
+      <div className="Footer">
+        <Footer />
       </div>
     </Container>
   );

@@ -1,11 +1,16 @@
-import React, { Component } from 'react';
-import axios from 'axios';
-import { Container, Row, Col } from 'react-bootstrap';
-import SearchBar from '../SearchBar/SearchBar';
-import styles from '../styles/styles.module.scss';
-import BackgroundColor from '@/components/styles/background.module.scss';
-import { baseUrl } from '../utils/Urls';
-import Link from 'next/link';
+import React, { Component } from "react";
+import axios from "axios";
+import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import styles from "../styles/styles.module.scss";
+import BackgroundColor from "../styles/background.module.scss";
+import { baseUrl } from "../utils/Urls";
+import Link from "next/link";
+import GenresModal from "../GenresModal/GenresModal";
+import AdvancedSearchModal, {
+  AdvancedSearchFilters,
+} from "../AdvancedSearchModal/AdvancedSearchModal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch, faStar } from "@fortawesome/free-solid-svg-icons";
 
 interface Movie {
   _id: string;
@@ -13,6 +18,8 @@ interface Movie {
   film_image: string;
   release_date: string;
   film_trailer: string;
+  imdbRating?: string;
+  genre?: string;
 }
 
 interface FavoriteMovie {
@@ -23,6 +30,7 @@ interface FavoriteMovie {
   film_trailer: string;
   age_rating: string;
   age_rating_image: string;
+  imdbRating?: string;
 }
 
 interface State {
@@ -31,6 +39,11 @@ interface State {
   defaultMovies: Movie[];
   clickedCardIndex: number | null;
   isLoading: boolean;
+  searchTerm: string;
+  selectedGenre: string;
+  isGenresModalOpen: boolean;
+  isAdvancedSearchModalOpen: boolean;
+  isSearching: boolean;
 }
 
 class Movies extends Component<{}, State> {
@@ -42,8 +55,32 @@ class Movies extends Component<{}, State> {
       defaultMovies: [],
       clickedCardIndex: null,
       isLoading: true,
+      searchTerm: "",
+      selectedGenre: "",
+      isGenresModalOpen: false,
+      isAdvancedSearchModalOpen: false,
+      isSearching: false,
     };
   }
+
+  genres: string[] = [
+    "Veiksmo",
+    "Animaciniai",
+    "Komedija",
+    "Drama",
+    "Trileriai",
+    "Nuotykiai",
+    "Fantastiniai",
+    "Romantiniai",
+    "Dokumentika",
+    "Šeimai",
+    "Mistiniai",
+    "Moksliniai",
+    "Siaubo",
+    "Biografiniai",
+    "Kriminaliniai",
+    "Muzika",
+  ];
 
   componentDidMount() {
     this.fetchMovies();
@@ -52,107 +89,380 @@ class Movies extends Component<{}, State> {
 
   fetchFavoriteMovies = async () => {
     try {
-      const response = await axios.get<{ favoriteMovies: FavoriteMovie[] }>(`${baseUrl}/favoritemovies`);
-      this.setState({ favoriteMovies: response.data.favoriteMovies, isLoading: false });
+      const response = await axios.get<{ favoriteMovies: FavoriteMovie[] }>(
+        `${baseUrl}/favoritemovies`
+      );
+      const favoriteMoviesWithRatings = await Promise.all(
+        response.data.favoriteMovies.map(async (movie) => {
+          try {
+            const apiKey = process.env.NEXT_PUBLIC_OMDB_API_KEY;
+            const omdbRes = await axios.get(
+              `https://www.omdbapi.com/?t=${encodeURIComponent(
+                movie.film_name
+              )}&apikey=${apiKey}`
+            );
+            return {
+              ...movie,
+              imdbRating: omdbRes.data.imdbRating || null,
+            };
+          } catch {
+            return {
+              ...movie,
+              imdbRating: null,
+            };
+          }
+        })
+      );
+      this.setState({
+        favoriteMovies: favoriteMoviesWithRatings,
+        isLoading: false,
+      });
     } catch (error) {
-      console.error('Error fetching favorite movies:', error);
+      console.error("Error fetching favorite movies:", error);
       this.setState({ isLoading: false });
     }
   };
 
   fetchMovies = async () => {
     try {
-      const response = await axios.get<{ movies: Movie[] }>(`${baseUrl}/movies`);
-      this.setState({ movies: response.data.movies, defaultMovies: response.data.movies, isLoading: false });
+      const response = await axios.get<{ movies: Movie[] }>(
+        `${baseUrl}/movies`
+      );
+      const moviesWithRatings = await Promise.all(
+        response.data.movies.map(async (movie) => {
+          try {
+            const apiKey = process.env.NEXT_PUBLIC_OMDB_API_KEY;
+            const omdbRes = await axios.get(
+              `https://www.omdbapi.com/?t=${encodeURIComponent(
+                movie.film_name
+              )}&apikey=${apiKey}`
+            );
+            return {
+              ...movie,
+              imdbRating: omdbRes.data.imdbRating || null,
+              genre: omdbRes.data.Genre || "",
+            };
+          } catch {
+            return {
+              ...movie,
+              imdbRating: null,
+              genre: "",
+            };
+          }
+        })
+      );
+      this.setState({
+        movies: moviesWithRatings,
+        defaultMovies: moviesWithRatings,
+        isLoading: false,
+      });
     } catch (error) {
-      console.error('Error fetching movies:', error);
+      console.error("Error fetching movies:", error);
       this.setState({ isLoading: false });
     }
   };
 
-  handleSearch = (searchTerm: string) => {
-    const filteredMovies = this.state.defaultMovies.filter(movie =>
-      movie.film_name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    this.setState({ movies: filteredMovies });
+  handleSearch = () => {
+    const { searchTerm, selectedGenre, defaultMovies } = this.state;
+
+    const filtered = defaultMovies.filter((movie) => {
+      const nameMatch = movie.film_name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const genreMatch = selectedGenre
+        ? movie.genre?.toLowerCase().includes(selectedGenre.toLowerCase())
+        : true;
+      return nameMatch && genreMatch;
+    });
+
+    this.setState({
+      movies: filtered,
+      isSearching: !!searchTerm || !!selectedGenre,
+    });
   };
 
-  handleSort = () => {
-    const sortedMovies = [...this.state.movies].sort((a, b) => a.film_name.localeCompare(b.film_name));
-    this.setState({ movies: sortedMovies });
+  toggleAdvancedSearchModal = () => {
+    this.setState((prev) => ({
+      isAdvancedSearchModalOpen: !prev.isAdvancedSearchModalOpen,
+    }));
+  };
+
+  handleAdvancedSearch = (filters: AdvancedSearchFilters) => {
+    const { keyword, yearFrom, yearTo, genre } = filters;
+    const { defaultMovies } = this.state;
+
+    const filtered = defaultMovies.filter((movie) => {
+      const keywordLower = keyword.toLowerCase();
+      const nameMatch = movie.film_name.toLowerCase().includes(keywordLower);
+
+      const genreField = movie.genre?.toLowerCase() || "";
+      const genreMatch = genre
+        ? genreField.includes(genre.toLowerCase())
+        : true;
+
+      const notSeriesOrAnime =
+        !genreField.includes("tv") &&
+        !genreField.includes("anime") &&
+        !genreField.includes("series") &&
+        !genreField.includes("show");
+
+      const movieYear = movie.release_date
+        ? parseInt(movie.release_date.slice(0, 4))
+        : null;
+
+      let yearMatch = true;
+
+      if (movieYear !== null) {
+        const from = yearFrom ? parseInt(yearFrom) : null;
+        const to = yearTo ? parseInt(yearTo) : null;
+
+        if (from !== null && to !== null) {
+          yearMatch = movieYear >= from && movieYear <= to;
+        } else if (from !== null) {
+          yearMatch = movieYear >= from;
+        } else if (to !== null) {
+          yearMatch = movieYear <= to;
+        }
+      }
+
+      return nameMatch && genreMatch && notSeriesOrAnime && yearMatch;
+    });
+
+    this.setState({
+      movies: filtered,
+      isAdvancedSearchModalOpen: false,
+      isSearching: true,
+      searchTerm: keyword,
+      selectedGenre: genre,
+    });
   };
 
   handleClearSearch = () => {
-    this.setState({ movies: this.state.defaultMovies });
+    this.setState({
+      movies: this.state.defaultMovies,
+      searchTerm: "",
+      selectedGenre: "",
+      isSearching: false,
+    });
+  };
+
+  handleSort = () => {
+    const sorted = [...this.state.movies].sort((a, b) =>
+      a.film_name.localeCompare(b.film_name)
+    );
+    this.setState({ movies: sorted });
   };
 
   handleCardClick = (index: number) => {
     this.setState({ clickedCardIndex: index });
   };
 
+  toggleGenresModal = () => {
+    this.setState((prev) => ({ isGenresModalOpen: !prev.isGenresModalOpen }));
+  };
+
+  handleSelectGenreFromModal = (genre: string) => {
+    this.setState(
+      { selectedGenre: genre, isGenresModalOpen: false },
+      this.handleSearch
+    );
+  };
+
   render() {
-    const { movies, favoriteMovies, clickedCardIndex, isLoading } = this.state;
+    const {
+      movies,
+      favoriteMovies,
+      clickedCardIndex,
+      isLoading,
+      searchTerm,
+      selectedGenre,
+      isGenresModalOpen,
+      isSearching,
+      isAdvancedSearchModalOpen,
+    } = this.state;
+
+    const filteredFavoriteMovies = favoriteMovies
+      .filter(
+        (movie) =>
+          movie.film_favorite_image && movie.film_favorite_image.trim() !== ""
+      )
+      .slice(0, 6);
 
     return (
-      <Container fluid className={`bgc-dark-2 ${isLoading ? '' : 'loaded-background'}`}>
-        <Row className="p-row-sm pt-3 pb-1 justify-content-center" style={{ backgroundColor: "#ACE1AF" }}>
-          {favoriteMovies.map((movie, index) => (
-            <Col key={movie._id} className={`${BackgroundColor} bg col-6 col-sm-4 col-lg-2 mb-2 backdrop-shortnews-item`}>
-              <Link href={`/favoriteMovies/${movie._id}`} className="text-decoration-none">
-                <div className="card border-0 bg-transparent">
-                  <div className="position-relative">
+      <Container
+        fluid
+        className={`bgc-dark-2 ${isLoading ? "" : "loaded-background"}`}
+      >
+        {/* 🔍 Search Bar Section */}
+        <div
+          className="bg-[#0e0e0e] py-4 px-3 mt-5 rounded-md"
+          style={{ maxWidth: "2000px", margin: "0 auto" }}
+        >
+          <div className="pb-4">
+            <Form
+              onSubmit={(e) => {
+                e.preventDefault();
+                this.handleSearch();
+              }}
+            >
+              <div className="flex flex-wrap gap-3 items-center">
+                <div className="flex items-center bg-neutral-800 px-4 py-2 rounded-md border border-neutral-700 flex-grow w-full md:w-auto">
+                  <FontAwesomeIcon
+                    icon={faSearch}
+                    className="text-neutral-400 mr-3 cursor-pointer hover:text-white"
+                    onClick={this.handleSearch}
+                    title="Ieškoti"
+                  />
+                  <Form.Control
+                    type="text"
+                    placeholder="Ieškoti filmų..."
+                    className="bg-transparent text-white placeholder-neutral-500 border-0 focus:ring-0 focus:outline-none w-full"
+                    value={searchTerm}
+                    onChange={(e) =>
+                      this.setState({ searchTerm: e.target.value })
+                    }
+                  />
+                </div>
+
+                <Button
+                  variant="outline-light"
+                  size="sm"
+                  className="bg-neutral-800 border-neutral-600 hover:bg-neutral-700 text-white"
+                  onClick={this.toggleGenresModal}
+                >
+                  Pasirinkti žanrą
+                </Button>
+
+                <Button
+                  variant="outline-light"
+                  size="sm"
+                  className="bg-neutral-800 border-neutral-600 hover:bg-neutral-700 text-white"
+                  onClick={this.toggleAdvancedSearchModal}
+                >
+                  Išplėstinė paieška
+                </Button>
+
+                {selectedGenre && (
+                  <span className="text-white ml-2">
+                    Pasirinktas: <strong>{selectedGenre}</strong>
+                  </span>
+                )}
+
+                {(searchTerm || selectedGenre) && (
+                  <Button
+                    variant="outline-light"
+                    size="sm"
+                    className="bg-red-600 border-neutral-600 hover:bg-red-700 text-white ml-2"
+                    onClick={this.handleClearSearch}
+                  >
+                    Išvalyti paiešką
+                  </Button>
+                )}
+              </div>
+            </Form>
+
+            <div className="text-sm text-neutral-400 mt-3">
+              <span className="font-semibold text-white">PAIEŠKA</span> iš viso{" "}
+              <span className="bg-neutral-800 px-2 py-1 rounded text-white">
+                {movies.length}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {!isSearching && (
+          <div className={`${BackgroundColor.favoriteBackground} py-4 mb-4`}>
+            <h3 className="text-light mb-4 px-3">Favorite Movies</h3>
+            <Row className="justify-content-center">
+              {filteredFavoriteMovies.map((movie, index) => (
+                <Col
+                  key={movie._id}
+                  xs={6}
+                  sm={4}
+                  md={3}
+                  lg={2}
+                  className={`backdrop-shortnews-item ${BackgroundColor.fadeIn}`}
+                  style={{ animationDelay: `${index * 0.2}s` }}
+                >
+                  <Link href={`/favoriteMovies/${movie._id}`} className="w-100">
                     <img
-                      className="card-img-top rounded shadow lazyloaded"
                       src={movie.film_favorite_image}
                       alt={movie.film_name}
+                      className="backdrop-shortnews-img rounded"
+                      loading="lazy"
                     />
-                    {clickedCardIndex === index && (
-                      <div className="position-absolute top-0 start-0 w-100 h-100 bg-overlay" style={{ zIndex: 1 }}></div>
-                    )}
-                    <div className="position-absolute top-0 start-0 w-100 h-100 bg-overlay" style={{ zIndex: 1 }}></div>
-                    <div className="position-absolute fixed-top pt-2 pl-2 d-flex" style={{ zIndex: 0 }}>
+                    <div className="backdrop-shortnews-overlay rounded" />
+                    <div className="backdrop-shortnews-name text-white no-underline">
+                      {movie.film_name}
                     </div>
-                    <div className="position-absolute fixed-bottom text-warning text-right pb-2 pr-2" style={{ zIndex: 0 }}>
-                      <div className="d-inline bg-dark-tr px-2 py-1 rounded">
-                        {movie.release_date} <i className="fa fa-star" aria-hidden="true"></i>
-                      </div>
+                    <div className="backdrop-shortnews-date text-white no-underline">
+                      {movie.release_date}
                     </div>
-                  </div>
-                  <div className="card-body px-1 pt-2 pb-0">
-                    <div className="card-title small text-light text-truncate m-0">{movie.film_name} <span className="text-white-50">{movie.release_date}</span></div>
-                    <div className="card-title small text-white-50 m-0"></div>
-                  </div>
+                    <div className="backdrop-shortnews-date text-white flex items-center justify-center  gap-1 no-underline">
+                      <FontAwesomeIcon
+                        icon={faStar}
+                        className="text-yellow-400"
+                      />
+                      IMDb: {movie.imdbRating || "N/A"}
+                    </div>
+                  </Link>
+                </Col>
+              ))}
+            </Row>
+          </div>
+        )}
+
+        {/* 🎬 Movies List */}
+        <Row className="g-3">
+          {movies.map((movie, index) => (
+            <Col
+              key={movie._id}
+              xs={6}
+              sm={4}
+              md={3}
+              lg={2}
+              className={`backdrop-shortnews-item ${BackgroundColor.fadeIn}`}
+              style={{ animationDelay: `${index * 0.1}s` }}
+              onClick={() => this.handleCardClick(index)}
+            >
+              <Link href={`/i/${movie._id}`} className="w-100 no-underline">
+                <img
+                  src={movie.film_image}
+                  alt={movie.film_name}
+                  className={`backdrop-shortnews-img rounded ${
+                    clickedCardIndex === index ? styles.cardClicked : ""
+                  }`}
+                  loading="lazy"
+                />
+                <div className="backdrop-shortnews-overlay rounded" />
+                <div className=" text-white  flex items-center justify-center no-underline">
+                  {movie.film_name}
+                </div>
+                <div className="backdrop-shortnews-date text-white  flex items-center justify-center no-underline">
+                  {movie.release_date}
+                </div>
+
+                <div className="backdrop-shortnews-date text-white flex items-center justify-center gap-1 no-underline">
+                  <FontAwesomeIcon icon={faStar} className="text-yellow-400" />
+                  IMDb: {movie.imdbRating || "N/A"}
                 </div>
               </Link>
             </Col>
           ))}
         </Row>
 
-        <SearchBar
-          handleSearch={this.handleSearch}
-          handleSort={this.handleSort}
-          handleClearSearch={this.handleClearSearch}
+        <GenresModal
+          show={isGenresModalOpen}
+          genres={this.genres}
+          onHide={() => this.setState({ isGenresModalOpen: false })}
+          onSelectGenre={this.handleSelectGenreFromModal}
         />
-        <Row className="justify-content-center">
-          {movies.map((movie, index) => (
-            <Col key={movie._id} xs={12} sm={6} md={4} lg={3} className={`backdrop-shortnews-item mb-4 animated fadeIn delay-${index + 1}s`} onClick={() => this.handleCardClick(index)}>
-              <Link href={`/i/${movie._id}`} className="text-decoration-none">
-                <div className={`card ${styles.card} ${clickedCardIndex === index ? 'bg-overlay' : ''}`} style={{ position: 'relative' }}>
-                  <img src={movie.film_image} className="card-img-top" alt={movie.film_name} />
-                  {clickedCardIndex === index && (
-                    <div className="position-absolute top-0 start-0 w-100 h-100 bg-overlay" style={{ zIndex: 1 }}></div>
-                  )}
-                  <div className="card-body bg-dark">
-                    <h5 className="card-title text-light">{movie.film_name}</h5>
-                    <p className="card-text text-light">{movie.release_date}</p>
-                    <a href={movie.film_trailer} className="btn btn-secondary">Watch Trailer</a>
-                    <a href={movie.film_trailer} className={`${styles.cardbtn} btn btn-secondary m-2`}>Watch Movie</a>
-                  </div>
-                </div>
-              </Link>
-            </Col>
-          ))}
-        </Row>
+
+        <AdvancedSearchModal
+          show={isAdvancedSearchModalOpen}
+          onHide={() => this.setState({ isAdvancedSearchModalOpen: false })}
+          onSearch={this.handleAdvancedSearch}
+        />
       </Container>
     );
   }

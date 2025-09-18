@@ -1,33 +1,31 @@
 import React from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="border-top border-secondary bg-dark text-white py-4">
-      <div className="container">
-        <div className="row">
-          <div className="col-md-8 d-flex justify-content-center justify-content-md-start">
-            <ul className="nav">
-              <li className="nav-item">
-                <a href="index.html" className="nav-link link-light">Home</a>
-              </li>
-              <li className="nav-item">
-                <a href="#details" className="nav-link link-light">Details</a>
-              </li>
-              <li className="nav-item">
-                <a href="contact.html" className="nav-link link-light">Contact</a>
-              </li>
-            </ul>
-          </div>
-          <div className="col-md-4 text-center text-md-end">
-            <p className="mb-0">
-              Copyright &copy; HorrorHub 2024
-            </p>
-          </div>
+    <footer className="bg-[#1a0d0e] text-[#c89396] px-4 py-8 sm:px-6 md:px-10 lg:px-16">
+      <div className="max-w-7xl mx-auto flex flex-col items-center gap-6 text-center">
+        <nav className="flex flex-col sm:flex-row flex-wrap justify-center gap-4 sm:gap-6 text-base font-medium">
+          <FooterLink label="Support" href="#" />
+          <FooterLink label="Legal" href="#" />
+          <FooterLink label="Social Media" href="#" />
+        </nav>
+        <div className="w-full border-t border-[#472426] pt-4">
+          <p className="text-sm tracking-wide text-center">
+            © 2025 Horror Hub. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>
   );
 };
+
+const FooterLink: React.FC<{ label: string; href: string }> = ({ label, href }) => (
+  <a
+    href={href}
+    className="hover:text-red-500 transition-colors duration-200"
+  >
+    {label}
+  </a>
+);
 
 export default Footer;

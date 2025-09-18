@@ -1,34 +1,178 @@
+// Colors and Opacity
 $header-color: #070707;
 $navbar-color: #111111;
 $navbar-sticky-opacity: 0.9;
 
+// Global Container
+.customContainer {
+    max-width: 2000px;
+    margin: 0 auto;
+    padding-left: 50px;
+    padding-right: 40px;
 
-.header {
-    background-color: $header-color;    
-    margin-top: 126px;
-    min-height: 1000px;
-}
+    @media (min-width: 1600px) {
+        max-width: 1800px;
+        padding-left: 60px;
+        padding-right: 60px;
+    }
 
-.navbar {
-    transition: all 0.5s ease-in-out;
-    background-color: $navbar-color;
-}
-.btn-secondary{
-    gap:20px;
-}
-.navbar-sticky {
-    opacity: $navbar-sticky-opacity;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
-
-.loaded-background {
-    background-color: #ACE1AF; 
-  }
-@media(max-width:1000px){
-    .header  {
-        display: flex;
-        justify-content: center;
-        text-align:center;
+    @media (max-width: 768px) {
+        padding-left: 15px;
+        padding-right: 15px;
     }
 }
 
+// Navbar Styling
+.navbar {
+    background-color: $navbar-color;
+    transition: background-color 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        padding: 10px 20px;
+    }
+
+    @media (min-width: 2000px) {
+        padding: 30px 80px;
+    }
+}
+
+// Sticky Navbar Effect
+.navbar-sticky {
+    opacity: $navbar-sticky-opacity;
+    background-color: $navbar-color;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+    transition: background-color 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
+}
+
+// Logo Styling
+.logoImage {
+    border-radius: 8px;
+    max-width: 100%;
+    height: auto;
+}
+
+// Button Styling
+.btn-secondary {
+    gap: 20px;
+    display: flex;
+    align-items: center;
+}
+
+// Header Section
+.header {
+    background-color: $header-color;
+    padding: 60px 0;
+    text-align: center;
+
+    h1 {
+        font-size: 3.5rem;
+        color: white;
+
+        @media (max-width: 768px) {
+            font-size: 2.5rem;
+        }
+
+        @media (min-width: 2000px) {
+            font-size: 5rem;
+        }
+    }
+
+    p {
+        max-width: 800px;
+        margin: 0 auto;
+        color: white;
+        font-size: 1.1rem;
+
+        @media (max-width: 768px) {
+            font-size: 0.95rem;
+        }
+
+        @media (min-width: 2000px) {
+            font-size: 1.5rem;
+        }
+    }
+}
+
+// Responsive Navigation Items
+.nav-items {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    @media (min-width: 2000px) {
+        gap: 50px;
+    }
+}
+
+// Utility: Text Center for Mobile
+@media (max-width: 1000px) {
+    .header {
+        display: flex;
+        justify-content: center;
+        text-align: center;
+        flex-direction: column;
+    }
+}
+
+.desktop-login {
+    display: none;
+
+    @media (min-width: 768px) {
+        display: none;
+    }
+}
+
+.mobile-login {
+    display: flex;
+
+    @media (min-width: 768px) {
+        display: none;
+    }
+}
+
+
+.mobileMenuGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+
+    a {
+        flex: 0 1 48%;
+        text-align: center;
+        padding: 12px;
+        border: 1px solid #22c55e;
+        border-radius: 8px;
+        color: #22c55e;
+        font-weight: 600;
+        transition: background-color 0.3s, color 0.3s;
+
+        &:hover {
+            background-color: #22c55e;
+            color: white;
+        }
+    }
+}
+
+// Footer (Optional Example)
+.footer {
+    background-color: #111;
+    padding: 20px;
+    color: #aaa;
+    text-align: center;
+    font-size: 0.9rem;
+
+    @media (min-width: 2000px) {
+        font-size: 1.2rem;
+    }
+}
